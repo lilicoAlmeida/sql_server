@@ -1,0 +1,130 @@
+
+
+sp_exCalc: Esta procedure calcula diferentes funções com base no parâmetro @nome. Se for 'FIBO', ela retorna a soma dos dois números anteriores. Se for 'FAT', ela calcula o fatorial do número. Se for 'IRRF', ela calcula o Imposto de Renda Retido na Fonte com base em diferentes faixas de renda.
+
+sp_exMedia: Essa procedure calcula a média ponderada com base nos pesos dos parâmetros @p1, @p2 e @t. Se a média for maior ou igual a 6.0, ela retorna 'Aprovado'. Caso contrário, retorna a diferença entre 6.0 e a média.
+
+sp_exCalc2: Esta procedure calcula o desconto ou aumento com base no tipo especificado em @tipo ('DESC' ou 'AUM'). Ela retorna o valor do desconto ou aumento e o valor final com desconto ou aumento aplicado.
+
+cadComprador: Esta procedure insere um registro na tabela 'compradores' com os valores passados como parâmetros.
+
+alterComprador: Esta procedure atualiza um registro na tabela 'compradores' com os valores passados como parâmetros, com base no valor de 'cd_comprador'.
+
+create procedure sp_exCalc 
+    @num decimal(8,2),
+    @nome varchar(4)
+as 
+if @nome='FIBO' 
+begin 
+    select (@num-1) + (@num-2) 
+end 
+else if @nome='FAT' 
+begin 
+    Declare @cont int = @num, @aux int = 1 
+    while @cont > 0 
+    begin 
+        set @aux=@cont*@aux 
+        set @cont = @cont -1 
+    end 
+    select @aux 
+end 
+else if @nome='IRRF' 
+begin 
+    if @num <= 1903.98 
+    begin 
+        select 'valor isento de IRRF' 
+    end 
+    else if @num <= 2826.65 
+    begin 
+        select @num*0.075-142.80 
+    end 
+    else if @num <= 3751.05 
+    begin 
+        select @num*0.15-354.80 
+    end 
+    else if @num <= 4664.68 
+    begin 
+        select @num*0.225-636.13 
+    end 
+    else 
+    begin 
+        select @num*0.275-869.36 
+    end 
+end 
+
+
+
+create procedure sp_exMedia 
+    @p1 decimal,
+    @p2 decimal,
+    @t decimal, 
+    @tipo varchar(6) 
+as 
+Declare @media decimal(2,2) 
+set @media = (@p1*0.35)+(@p2*0.50)+(@t*0.15) 
+if @media>=6.0 
+    select 'Aprovado !' 
+else 
+    select (6 - @media) as 'valor faltante para alcançar a média' 
+
+
+
+    create procedure sp_exCalc2 
+    @valor decimal,
+    @porcent decimal,
+    @tipo varchar(5) 
+as 
+if @tipo = 'DESC' 
+begin 
+    select @valor*(@porcent/100) as 'Desconto',
+    @valor- (@valor*(@porcent/100)) as 'Valor com desconto' 
+end 
+else if @tipo = 'AUM' 
+begin 
+    select @valor*(@porcent/100) as 'Aumento', 
+    @valor*(@porcent/100)+@valor as 'Valor com aumento' 
+end 
+
+
+create procedure cadComprador 
+    @cd_comprador int, 
+    @nm_comprador varchar(30), 
+    @nm_enderecocomprador varchar(40), 
+    @nr_cpfcomprador varchar(11), 
+    @cd_cidade int, 
+    @cd_bairro int, 
+    @sg_estado varchar(2), 
+    @tel_comprador varchar(8) 
+as 
+insert into compradores 
+values(
+    @cd_comprador,
+    @nm_comprador,
+    @nm_enderecocomprador,
+    @nr_cpfcomprador,
+    @cd_cidade ,
+    @cd_bairro,
+    @sg_estado,
+    @tel_comprador
+)
+
+
+create procedure alterComprador 
+    @cd_comprador int, 
+    @nm_comprador varchar(30), 
+    @nm_enderecocomprador varchar(40), 
+    @nr_cpfcomprador varchar(11), 
+    @cd_cidade int, 
+    @cd_bairro int, 
+    @sg_estado varchar(2), 
+    @tel_comprador varchar(8) 
+as 
+update compradores 
+set nm_comprador=@nm_comprador,
+    nm_enderecocomprador=@nm_enderecocomprador,
+    nr_cpfcomprador=@nr_cpfcomprador,
+    cd_cidade=@cd_cidade,
+    cd_bairro=@cd_bairro,
+    sg_estado=@sg_estado,
+    tel_comprador=@tel_comprador 
+where cd_comprador=@cd_comprador

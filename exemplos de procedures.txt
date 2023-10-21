@@ -1,0 +1,61 @@
+create procedure aeee as
+declare @num1 int
+declare @num2 int
+declare @res int
+set @num1 = 7
+set @num2 = 8
+set @res = @num1 / @num2
+print @res 
+
+
+
+
+create procedure soma as
+declare @num1 int
+declare @num2 int
+declare @res int
+set @num1 = 7
+set @num2 = 8
+set @res = @num1 / @num2
+print @res
+
+exec soma
+
+alter procedure soma @num1 int, @num2 int as 
+declare @res int
+set @res = @num1 + @num2
+print @res;
+
+exec soma 3,14;
+
+create procedure soma1 @num1 int, @num2 int as 
+declare @res int
+set @res = @num1 - @num2
+print @res;
+
+exec soma1 14,3  
+
+create procedure soma2 @num1 int, @num2 int as 
+declare @res int
+set @res = @num1 * @num2
+print @res;
+
+exec soma2 3,14  
+
+
+create procedure soma3 @num1 int, @num2 int as 
+declare @res int
+set @res = @num1 / @num2
+print @res;
+
+exec soma3 14,3  
+
+Create procedure aeae @oper char(1), @num1 int, @num2 int as
+if @oper = '+'
+exec soma @num1, @num2
+if @oper = '-'
+exec soma1 @num1, @num2
+if @oper = '*'
+exec soma2 @num1, @num2
+if @oper = '/'
+exec soma3 @num1, @num2
